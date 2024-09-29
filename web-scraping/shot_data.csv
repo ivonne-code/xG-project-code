@@ -1,0 +1,35 @@
+Minute,Player,Squad,xG,PSxG,Outcome,Distance,Body Part,Notes,Player,Event,Player,Event
+Minute,Player,Squad,xG,PSxG,Outcome,Distance,Body Part,Notes,Player,Event,Player,Event
+5,Alexis Mac Allister,arArgentina,0.02,0.03,Saved,30,Right Foot,,Julián Álvarez,Pass (Live),,
+8,Rodrigo De Paul,arArgentina,0.08,,Off Target,23,Right Foot,,Ángel Di María,Pass (Live),Julián Álvarez,Pass (Live)
+17,Ángel Di María,arArgentina,0.11,,Off Target,17,Right Foot,,Rodrigo De Paul,Pass (Live),Lionel Messi,Pass (Live)
+23,Lionel Messi(pen),arArgentina,0.79,0.99,Goal,13,Left Foot,,Ángel Di María,Fouled,Ángel Di María,Take-On
+32,Alexis Mac Allister,arArgentina,0.02,,Off Target,29,Right Foot,,Alexis Mac Allister,Pass (Live),Enzo Fernández,Pass (Live)
+36,Ángel Di María,arArgentina,0.38,0.90,Goal,9,Left Foot,,Alexis Mac Allister,Pass (Live),Julián Álvarez,Pass (Live)
+,,,,,,,,,,,,
+49,Rodrigo De Paul,arArgentina,0.04,0.11,Saved,17,Right Foot,Volley,Ángel Di María,Pass (Live),Lionel Messi,Pass (Live)
+59,Julián Álvarez,arArgentina,0.07,0.29,Saved,14,Left Foot,,Ángel Di María,Pass (Live),Nicolás Tagliafico,Interception
+60,Lionel Messi,arArgentina,0.12,,Off Target,10,Right Foot,,Ángel Di María,Pass (Live),Nicolás Tagliafico,Pass (Live)
+68,Randal Kolo Muani,frFrance,0.09,,Off Target,8,Other,,Antoine Griezmann,Pass (Dead),Antoine Griezmann,Pass (Live)
+71,Kylian Mbappé,frFrance,0.03,,Off Target,19,Right Foot,,Theo Hernández,Pass (Live),Adrien Rabiot,Pass (Live)
+72,Enzo Fernández,arArgentina,0.07,0.16,Saved,23,Right Foot,,Lionel Messi,Pass (Live),Alexis Mac Allister,Pass (Live)
+80,Kylian Mbappé(pen),frFrance,0.79,0.99,Goal,13,Right Foot,,Randal Kolo Muani,Fouled,Kylian Mbappé,Pass (Live)
+81,Kylian Mbappé,frFrance,0.12,0.28,Goal,17,Right Foot,Volley,Marcus Thuram,Pass (Live),Kylian Mbappé,Pass (Live)
+84,Enzo Fernández,arArgentina,0.04,,Blocked,31,Right Foot,,Marcos Acuña,Pass (Live),Julián Álvarez,Pass (Live)
+90+3,Kylian Mbappé,frFrance,0.03,,Blocked,27,Right Foot,,Eduardo Camavinga,Tackle,,
+90+4,Adrien Rabiot,frFrance,0.06,0.02,Saved,14,Left Foot,,Eduardo Camavinga,Pass (Live),Kingsley Coman,Take-On
+90+7,Lionel Messi,arArgentina,0.07,0.06,Saved,25,Left Foot,,Rodrigo De Paul,Pass (Live),Julián Álvarez,Pass (Live)
+,,,,,,,,,,,,
+93,Alexis Mac Allister,arArgentina,0.03,,Off Target,25,Right Foot,,Enzo Fernández,Pass (Live),Rodrigo De Paul,Pass (Live)
+100,Youssouf Fofana,frFrance,0.02,,Blocked,33,Right Foot,,Youssouf Fofana,Fouled,,
+105,Lautaro Martínez,arArgentina,0.09,,Blocked,12,Right Foot,,Lionel Messi,Pass (Live),Alexis Mac Allister,Pass (Live)
+105,Gonzalo Montiel,arArgentina,0.02,,Blocked,27,Right Foot,Volley,Lautaro Martínez,Shot,,
+105+1,Lautaro Martínez,arArgentina,0.11,,Off Target,15,Left Foot,Volley,Marcos Acuña,Pass (Live),,
+,,,,,,,,,,,,
+107,Lionel Messi,arArgentina,0.03,0.28,Saved,19,Left Foot,Volley,Gonzalo Montiel,Pass (Dead),Cristian Romero,Pass (Live)
+108,Lautaro Martínez,arArgentina,0.14,0.14,Saved,11,Right Foot,,Enzo Fernández,Pass (Live),Lionel Messi,Pass (Live)
+108,Lionel Messi,arArgentina,0.86,0.92,Goal,4,Right Foot,Volley,Lautaro Martínez,Shot,,
+116,Kylian Mbappé,frFrance,0.04,,Blocked,22,Right Foot,,Kingsley Coman,Pass (Dead),Jules Koundé,Pass (Live)
+118,Kylian Mbappé(pen),frFrance,0.79,0.99,Goal,13,Right Foot,,,Fouled,Kylian Mbappé,Shot
+120+3,Randal Kolo Muani,frFrance,0.30,0.55,Saved,17,Right Foot,Volley,Ibrahima Konaté,Pass (Live),,
+120+3,Lautaro Martínez,arArgentina,0.25,,Off Target,11,Head,,Gonzalo Montiel,Pass (Live),Lionel Messi,Pass (Live)
