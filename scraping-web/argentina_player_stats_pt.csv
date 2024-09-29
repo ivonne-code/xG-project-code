@@ -1,0 +1,20 @@
+Player,#,Pos,Age,Club,Min,Att,Live,Dead,FK,TB,Sw,Crs,TI,CK,In,Out,Str,Cmp,Off,Blocks
+Player,#,Pos,Age,Club,Min,Gls,Ast,PK,PKatt,Sh,SoT,CrdY,CrdR,Touches,Tkl,Int,Blocks,xG,npxG,xAG
+Julián Álvarez,9,FW,22-321,1.engManchester City,102,0,0,0,0,1,1,0,0,39,0,0,1,0.1,0.1,0.0
+Lautaro Martínez,22,FW,25-118,1.itInter,18,0,0,0,0,4,1,0,0,13,0,0,0,0.6,0.6,0.0
+Ángel Di María,11,LW,34-307,1.itJuventus,63,1,0,0,0,2,1,0,0,43,0,1,1,0.5,0.5,0.2
+Marcos Acuña,8,"LW,CM,LM",31-051,1.esSevilla,57,0,0,0,0,0,0,1,0,40,2,0,2,0.0,0.0,0.1
+Lionel Messi,10,"RW,FW",35-177,1.frParis S-G,120,2,0,1,1,4,3,0,0,78,2,0,1,1.9,1.1,0.3
+Alexis Mac Allister,20,LM,23-359,1.engBrighton,115,0,1,0,0,3,1,0,0,70,1,0,2,0.1,0.1,0.4
+Germán Pezzella,6,CB,31-174,1.esBetis,5,0,0,0,0,0,0,0,0,1,0,0,0,0.0,0.0,0.0
+Enzo Fernández,24,"CM,RM",21-335,1.ptBenfica,120,0,0,0,0,2,1,1,0,114,10,0,3,0.1,0.1,0.1
+Rodrigo De Paul,7,RM,28-208,1.esAtlético Madrid,101,0,0,0,0,2,1,0,0,82,1,0,1,0.1,0.1,0.1
+Leandro Paredes,5,CM,28-172,1.itJuventus,19,0,0,0,0,0,0,1,0,17,1,0,0,0.0,0.0,0.0
+Nicolás Tagliafico,3,LB,30-109,1.frLyon,119,0,0,0,0,0,0,0,0,65,4,4,0,0.0,0.0,0.0
+Paulo Dybala,21,"LW,LB",29-033,1.itRoma,1,0,0,0,0,0,0,0,0,4,0,0,0,0.0,0.0,0.0
+Nicolás Otamendi,19,CB,34-309,1.ptBenfica,120,0,0,0,0,0,0,0,0,82,0,2,1,0.0,0.0,0.0
+Cristian Romero,13,CB,24-235,1.engTottenham,120,0,0,0,0,0,0,0,0,87,0,2,1,0.0,0.0,0.0
+Nahuel Molina,26,RB,24-256,1.esAtlético Madrid,90,0,0,0,0,0,0,0,0,60,1,1,0,0.0,0.0,0.0
+Gonzalo Montiel,4,"RB,RM",25-351,1.esSevilla,30,0,0,0,0,1,0,1,0,16,1,0,0,0.0,0.0,0.3
+Emiliano Martínez,23,GK,30-107,1.engAston Villa,120,0,0,0,0,0,0,1,0,37,0,0,0,0.0,0.0,0.0
+17 Players,,,,,"1,320",3,1,1,1,19,9,5,0,848,23,10,13,3.3,2.6,1.5
