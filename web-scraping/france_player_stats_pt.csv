@@ -1,4 +1,4 @@
-Player,#,Pos,Age,Club,Min,Att,Live,Dead,FK,TB,Sw,Crs,TI,CK,In,Out,Str,Cmp,Off,Blocks
+Player,#,Pos,Age,Club,Min,Gls,Ast,PK,PKatt,Sh,SoT,CrdY,CrdR,Touches,Tkl,Int,Blocks,xG,npxG,xAG
 Player,#,Pos,Age,Club,Min,Gls,Ast,PK,PKatt,Sh,SoT,CrdY,CrdR,Touches,Tkl,Int,Blocks,xG,npxG,xAG
 Olivier Giroud,9,FW,36-079,1.itMilan,40,0,0,0,0,0,0,1,0,11,1,0,0,0.0,0.0,0.0
 Marcus Thuram,26,"LM,LW",25-134,1.deGladbach,80,0,1,0,0,0,0,1,0,34,1,0,1,0.0,0.0,0.1

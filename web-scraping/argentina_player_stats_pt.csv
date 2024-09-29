@@ -1,4 +1,4 @@
-Player,#,Pos,Age,Club,Min,Att,Live,Dead,FK,TB,Sw,Crs,TI,CK,In,Out,Str,Cmp,Off,Blocks
+Player,#,Pos,Age,Club,Min,Gls,Ast,PK,PKatt,Sh,SoT,CrdY,CrdR,Touches,Tkl,Int,Blocks,xG,npxG,xAG
 Player,#,Pos,Age,Club,Min,Gls,Ast,PK,PKatt,Sh,SoT,CrdY,CrdR,Touches,Tkl,Int,Blocks,xG,npxG,xAG
 Julián Álvarez,9,FW,22-321,1.engManchester City,102,0,0,0,0,1,1,0,0,39,0,0,1,0.1,0.1,0.0
 Lautaro Martínez,22,FW,25-118,1.itInter,18,0,0,0,0,4,1,0,0,13,0,0,0,0.6,0.6,0.0
