@@ -6,4 +6,5 @@ file_path_st = '/Users/yifengluo/Downloads/xG-project-code-main/xG-project-code/
 df_st = pd.read_csv(file_path_st)
 combined_df = pd.concat([df_pt, df_st], ignore_index=True)
 combined_df = combined_df.iloc[1:]
+
 combined_df = combined_df.dropna()
