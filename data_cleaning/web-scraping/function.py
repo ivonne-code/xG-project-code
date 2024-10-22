@@ -9,8 +9,8 @@ import os
 print("Current working directory:", os.getcwd())
 
 # Since the script and CSV are in the same directory, directly use the filename
-france_data = pd.read_csv('france_player_stats_pt.csv')
-argentina_data = pd.read_csv('argentina_player_stats_pt.csv')
+france_data = pd.read_csv('data_cleaning/web-scraping/france_player_stats_pt.csv')
+argentina_data = pd.read_csv('data_cleaning/web-scraping/argentina_player_stats_pt.csv')
 
 # Combine the data
 combined_data = pd.concat([france_data, argentina_data])
