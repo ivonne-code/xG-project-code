@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
+import statsmodels.api as sm
 
 # Load the datasets
 france_data_path = 'data_cleaning/web-scraping/france_player_stats_pt.csv'
@@ -51,3 +52,25 @@ print("Model Intercept:", intercept)
 print("\nDerived Function for xG:")
 print(f"xG = {intercept:.4f} + ", end="")
 print(" + ".join([f"{coeff:.4f}*{feat}" for coeff, feat in zip(coefficients, features)]))
+
+X = combined_data[features]
+X = sm.add_constant(X)  # adding a constant for the intercept
+
+# Model Building using GLM
+model = sm.GLM(y, X, family=sm.families.Gaussian())
+results = model.fit()
+
+# Print the summary of the regression
+print(results.summary())
+
+model_sklearn = LinearRegression()
+model_sklearn.fit(X, y)
+
+# Output the coefficients of the model
+coefficients_sklearn = model_sklearn.coef_
+intercept_sklearn = model_sklearn.intercept_
+
+print("Model Coefficients from sklearn:", coefficients_sklearn)
+print("Model Intercept from sklearn:", intercept_sklearn)
+
+#the information from 
