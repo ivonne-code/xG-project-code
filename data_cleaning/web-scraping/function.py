@@ -1,51 +1,53 @@
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-import os
-print("Current working directory:", os.getcwd())
+from sklearn.metrics import mean_squared_error, r2_score
 
-# Since the script and CSV are in the same directory, directly use the filename
-france_data = pd.read_csv('data_cleaning/web-scraping/france_player_stats_pt.csv')
-argentina_data = pd.read_csv('data_cleaning/web-scraping/argentina_player_stats_pt.csv')
-
-# Combine the data
+# Load the datasets
+france_data_path = 'data_cleaning/web-scraping/france_player_stats_pt.csv'
+argentina_data_path = 'data_cleaning/web-scraping/argentina_player_stats_pt.csv'
+france_data = pd.read_csv(france_data_path)
+argentina_data = pd.read_csv(argentina_data_path)
 combined_data = pd.concat([france_data, argentina_data])
 
-# Data cleaning
-combined_data = combined_data.replace('-', np.nan)  # Replace hyphens with NaN
-combined_data = combined_data.dropna()  # Drop rows with missing values
-combined_data = combined_data[combined_data.columns[1:]]  # Drop the first column if it's duplicate header or irrelevant
-
-# Convert relevant columns to numeric
+# Data cleaning and preparation
+# Convert columns to numeric and drop rows with any NaN values in these columns
 numeric_columns = ['Min', 'Gls', 'Ast', 'PK', 'PKatt', 'SoT', 'Touches', 'Tkl', 'Int', 'Blocks', 'xG', 'npxG', 'xAG']
 combined_data[numeric_columns] = combined_data[numeric_columns].apply(pd.to_numeric, errors='coerce')
+combined_data.dropna(subset=numeric_columns, inplace=True)
 
-# Correlation matrix
-corr_matrix = combined_data[numeric_columns].corr()
-print(corr_matrix['xG'].sort_values(ascending=False))  # Show correlation with xG
+# Feature Selection
+# Choosing features that have shown some reasonable correlation or theoretical relevance
+features = ['Min', 'Gls', 'SoT', 'Touches', 'Tkl', 'Blocks']
 
-# Heatmap of correlations
-plt.figure(figsize=(10, 8))
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm')
-plt.title('Correlation Matrix')
-plt.show()
+# Target variable
+target = 'xG'
 
-# Regression model
-X = combined_data[['Min', 'SoT', 'Touches', 'Tkl', 'Blocks']]  # Selecting some predictors for simplicity
-y = combined_data['xG']
-
-# Splitting the data into training and testing sets
+# Splitting data
+X = combined_data[features]
+y = combined_data[target]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Fit the model
+# Model Building
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Predicting and evaluating the model
+# Making predictions and evaluating the model
 y_pred = model.predict(X_test)
 mse = mean_squared_error(y_test, y_pred)
-print(f'Mean Squared Error: {mse}')
+r2 = r2_score(y_test, y_pred)
+
+# Output the coefficients of the model
+coefficients = model.coef_
+intercept = model.intercept_
+
+print("Mean Squared Error:", mse)
+print("R^2 Score:", r2)
+print("Model Coefficients:", coefficients)
+print("Model Intercept:", intercept)
+
+# Function derived from the model
+print("\nDerived Function for xG:")
+print(f"xG = {intercept:.4f} + ", end="")
+print(" + ".join([f"{coeff:.4f}*{feat}" for coeff, feat in zip(coefficients, features)]))
