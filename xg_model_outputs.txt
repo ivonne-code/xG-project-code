@@ -1,0 +1,26 @@
+Data Statistics:
+Total shots: 937185
+
+Feature Importance:
+x: 0.000
+y: 0.004
+shot_angle: 0.003
+
+xG Formula:
+
+    xG计算公式(xG calculated function):
+    
+    1. 标准化变量(standard variable):
+        x_std = (x - 57.532) / 28.231
+        y_std = (y - 39.899) / 22.958
+        shot_angle_std = (shot_angle - 0.125) / 0.087
+    
+    2. 计算对数几率 (log odds):
+        log_odds = -2.195 
+                   + 0.000 * x_std 
+                   + 0.004 * y_std 
+                   + -0.003 * shot_angle_std
+    
+    3. 转换为概率 (xG)(transfer to probability):
+        xG = 1 / (1 + e^(-log_odds))
+    
