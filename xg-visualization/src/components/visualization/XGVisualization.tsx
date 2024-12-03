@@ -83,7 +83,7 @@ const XGVisualization: React.FC = () => {
             <SelectValue placeholder="Select view mode" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="heatmap">Heatmap View</SelectItem>
+            <SelectItem value="heatmap">Heatmap</SelectItem>
             <SelectItem value="contour">Contour map</SelectItem>
           </SelectContent>
         </Select>
