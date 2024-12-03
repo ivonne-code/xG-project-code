@@ -217,6 +217,7 @@ def main(folder_path,output_file):
             f.write("\nxG Formula:\n")
             f.write(formula)
 
+        
         return shots_df, model, scaler, feature_coefficients
         
     except Exception as e:
@@ -228,3 +229,4 @@ if __name__ == "__main__":
     folder_path = "/Users/yifengluo/Desktop/xG-project-code/open-data/data/three-sixty"
     output_file = "xg_model_outputs.txt"
     shots_df, model, scaler, coefficients = main(folder_path,output_file)
+

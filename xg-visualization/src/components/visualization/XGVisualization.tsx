@@ -83,8 +83,8 @@ const XGVisualization: React.FC = () => {
             <SelectValue placeholder="Select view mode" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="heatmap">热图视图</SelectItem>
-            <SelectItem value="contour">等高线视图</SelectItem>
+            <SelectItem value="heatmap">Heatmap View</SelectItem>
+            <SelectItem value="contour">Contour map</SelectItem>
           </SelectContent>
         </Select>
       </CardHeader>
@@ -143,9 +143,9 @@ const XGVisualization: React.FC = () => {
         {/* 图例 */}
         <div className="mt-4 flex items-center justify-center">
           <div className="flex items-center space-x-2">
-            <span className="text-sm">低进球概率</span>
+            <span className="text-sm">low goal probability</span>
             <div className="w-32 h-4 bg-gradient-to-r from-white to-blue-500" />
-            <span className="text-sm">高进球概率</span>
+            <span className="text-sm">High goal probability</span>
           </div>
         </div>
       </CardContent>
