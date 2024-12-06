@@ -8,6 +8,43 @@ import { useState } from 'react';
 const XG2DPlots = () => {
  const [plotType, setPlotType] = useState('distance');
 
+ // 使用实际训练好的模型计算 xG
+ const calculateXG = (x: number, y: number) => {
+   // 模型参数
+   const means = [57.532, 39.899, 0.125];  // [x_mean, y_mean, angle_mean]
+   const scales = [28.231, 22.958, 0.087];  // [x_scale, y_scale, angle_scale]
+   const coefficients = {
+       x: 0.006,
+       y: -0.002,
+       shot_angle: -0.003
+   };
+   const intercept = -2.196;
+
+   // 1. 计算角度
+   const GOAL_WIDTH = 8;
+   const GOAL_Y1 = 36;
+   const GOAL_Y2 = 44;
+   
+   const d1 = Math.sqrt((120-x)**2 + (GOAL_Y1-y)**2);
+   const d2 = Math.sqrt((120-x)**2 + (GOAL_Y2-y)**2);
+   const cosAngle = (d1**2 + d2**2 - GOAL_WIDTH**2)/(2*d1*d2);
+   const angle = Math.acos(Math.min(1, Math.max(-1, cosAngle)));
+
+   // 2. 标准化变量
+   const x_std = (x - means[0]) / scales[0];
+   const y_std = (y - means[1]) / scales[1];
+   const angle_std = (angle - means[2]) / scales[2];
+
+   // 3. 计算对数几率
+   const logOdds = intercept + 
+                   coefficients.x * x_std +
+                   coefficients.y * y_std +
+                   coefficients.shot_angle * angle_std;
+
+   // 4. 转换为概率
+   return 1 / (1 + Math.exp(-logOdds));
+ };
+
  // 生成距离-xG数据
  const generateDistancePlotData = () => {
    const data = [];
@@ -18,7 +55,7 @@ const XG2DPlots = () => {
      const xg = calculateXG(x, centerY);
      data.push({
        distance,
-       xg: xg.toFixed(3),
+       xg: xg.toFixed(4),
      });
    }
    return data;
@@ -34,7 +71,7 @@ const XG2DPlots = () => {
      const xg = calculateXG(x, y);
      data.push({
        angle: angle.toFixed(1),
-       xg: xg.toFixed(3),
+       xg: xg.toFixed(4),
      });
    }
    return data;
@@ -55,37 +92,18 @@ const XG2DPlots = () => {
    return data;
  };
 
- // 计算 xG 值
- const calculateXG = (x: number, y: number) => {
-   const GOAL_WIDTH = 8;
-   const GOAL_Y1 = 36;
-   const GOAL_Y2 = 44;
-   
-   // 计算到球门两端的距离
-   const d1 = Math.sqrt((120-x)**2 + (GOAL_Y1-y)**2);
-   const d2 = Math.sqrt((120-x)**2 + (GOAL_Y2-y)**2);
-   
-   // 计算射门角度
-   const cosAngle = (d1**2 + d2**2 - GOAL_WIDTH**2)/(2*d1*d2);
-   const angle = Math.acos(Math.min(1, Math.max(-1, cosAngle)));
-   
-   // 简单的 xG 模型
-   const distance = Math.sqrt((120-x)**2 + (40-y)**2);
-   return Math.exp(-distance/50) * Math.exp(-angle);
- };
-
  return (
    <Card className="w-full max-w-4xl">
      <CardHeader>
-       <CardTitle>xG data analysis</CardTitle>
+       <CardTitle>xG 数据分析</CardTitle>
        <Select value={plotType} onValueChange={setPlotType}>
          <SelectTrigger className="w-[180px]">
            <SelectValue placeholder="选择图表类型" />
          </SelectTrigger>
          <SelectContent>
-           <SelectItem value="distance">Distance-xG relation</SelectItem>
-           <SelectItem value="angle">Angle-xG relation</SelectItem>
-           <SelectItem value="scatter">Shot position distribution</SelectItem>
+           <SelectItem value="distance">距离-xG关系</SelectItem>
+           <SelectItem value="angle">角度-xG关系</SelectItem>
+           <SelectItem value="scatter">射门位置分布</SelectItem>
          </SelectContent>
        </Select>
      </CardHeader>
@@ -102,20 +120,22 @@ const XG2DPlots = () => {
              <XAxis 
                dataKey="distance"
                label={{ 
-                 value: 'Distance between the Goal line (meter)', 
+                 value: '与球门的距离 (米)', 
                  position: 'bottom',
                  offset: 20
                }}
              />
              <YAxis
                label={{ 
-                 value: 'Rate of expected goals (xG)', 
+                 value: '期望进球率 (xG)', 
                  angle: -90, 
                  position: 'insideLeft',
                  offset: -40
                }}
              />
-             <Tooltip />
+             <Tooltip 
+               formatter={(value: any) => [Number(value).toFixed(4), '期望进球率']}
+             />
              <Legend 
                verticalAlign="top"
                height={36}
@@ -124,7 +144,8 @@ const XG2DPlots = () => {
                type="monotone" 
                dataKey="xg" 
                stroke="#2563eb" 
-               name="expected goals"
+               name="期望进球"
+               dot={false}
              />
            </LineChart>
          )}
@@ -140,20 +161,22 @@ const XG2DPlots = () => {
              <XAxis 
                dataKey="angle"
                label={{ 
-                 value: 'angle (degree)', 
+                 value: '射门角度 (度)', 
                  position: 'bottom',
                  offset: 20
                }}
              />
              <YAxis
                label={{ 
-                 value: 'expected goals (xG)', 
+                 value: '期望进球率 (xG)', 
                  angle: -90, 
                  position: 'insideLeft',
                  offset: -40
                }}
              />
-             <Tooltip />
+             <Tooltip 
+               formatter={(value: any) => [Number(value).toFixed(4), '期望进球率']}
+             />
              <Legend 
                verticalAlign="top"
                height={36}
@@ -162,7 +185,8 @@ const XG2DPlots = () => {
                type="monotone" 
                dataKey="xg" 
                stroke="#2563eb" 
-               name="expected goals"
+               name="期望进球"
+               dot={false}
              />
            </LineChart>
          )}
@@ -177,9 +201,9 @@ const XG2DPlots = () => {
              <XAxis 
                type="number" 
                dataKey="x" 
-               name="X position"
+               name="X位置"
                label={{ 
-                 value: 'X position (meter)', 
+                 value: 'X位置 (米)', 
                  position: 'bottom',
                  offset: 20
                }}
@@ -188,22 +212,25 @@ const XG2DPlots = () => {
              <YAxis 
                type="number" 
                dataKey="y" 
-               name="Y position"
+               name="Y位置"
                label={{ 
-                 value: 'Y position (meter)', 
+                 value: 'Y位置 (米)', 
                  angle: -90, 
                  position: 'insideLeft',
                  offset: -40
                }}
                domain={[20, 60]}
              />
-             <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+             <Tooltip 
+               cursor={{ strokeDasharray: '3 3' }}
+               formatter={(value: any) => [Number(value).toFixed(4), '期望进球率']}
+             />
              <Legend 
                verticalAlign="top"
                height={36}
              />
              <Scatter 
-               name="shot position" 
+               name="射门位置" 
                data={generateScatterData()} 
                fill="#2563eb"
              />

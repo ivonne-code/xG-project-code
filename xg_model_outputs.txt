@@ -2,7 +2,7 @@ Data Statistics:
 Total shots: 937185
 
 Feature Importance:
-x: 0.002
+x: 0.006
 y: 0.002
 shot_angle: 0.003
 
@@ -16,10 +16,10 @@ xG Formula:
         shot_angle_std = (shot_angle - 0.125) / 0.087
     
     2. 计算对数几率 (log odds):
-        log_odds = -2.205 
-                   + -0.002 * x_std 
-                   + 0.002 * y_std 
-                   + 0.003 * shot_angle_std
+        log_odds = -2.196 
+                   + 0.006 * x_std 
+                   + -0.002 * y_std 
+                   + -0.003 * shot_angle_std
     
     3. 转换为概率 (xG)(transfer to probability):
         xG = 1 / (1 + e^(-log_odds))

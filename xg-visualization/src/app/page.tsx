@@ -35,7 +35,7 @@ export default function Home() {
       <main className="flex-1">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-center mb-8">
-            足球期望进球数(xG)可视化
+          Visualization of expected goals (xG) in soccer
           </h1>
           <XGVisualization />
           <div className="mt-8">

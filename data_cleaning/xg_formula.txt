@@ -1,0 +1,25 @@
+
+    xG Formula:
+    
+    1. Standardize variables:
+        x_std = (x - 103.571) / 8.802
+        y_std = (y - 39.761) / 9.895
+        distance_std = (distance_to_goal - 19.203) / 8.753
+        angle_std = (shot_angle - 0.443) / 0.276
+    
+    2. Calculate log odds:
+        log_odds = -2.422 + 
+                   -0.381 * x_std + 
+                   0.007 * y_std + 
+                   -1.125 * distance_std + 
+                   0.234 * angle_std
+    
+    3. Convert to probability:
+        xG = 1 / (1 + exp(-log_odds))
+    
+    Feature coefficients:
+    x: -0.381
+    y: 0.007
+    distance_to_goal: -1.125
+    shot_angle: 0.234
+    

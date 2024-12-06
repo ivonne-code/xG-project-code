@@ -7,226 +7,264 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from tqdm import tqdm
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import seaborn as sns
 
-def load_json_safely(file_path):
+def create_shot_visualizations(shots_df, output_prefix="shot_analysis"):
     """
-    安全地加载JSON文件
+    Create 2D and 3D visualizations of shot data
     """
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception as e:
-        print(f"Error loading {file_path}: {str(e)}")
-        return None
+    # 2D Shot Map with xG
+    plt.figure(figsize=(15, 10))
+    scatter = plt.scatter(
+        shots_df['x'],
+        shots_df['y'],
+        c=shots_df['predicted_xg'],
+        s=shots_df['is_goal']*200 + 50,
+        cmap='viridis',
+        alpha=0.6
+    )
+    
+    # Add pitch markings
+    plt.plot([120, 120], [36, 44], 'white', linewidth=2)  # Goal line
+    plt.plot([102, 102], [18, 62], 'white', linewidth=2)  # Penalty area
+    plt.plot([114, 114], [30, 50], 'white', linewidth=2)  # Six yard box
+    
+    plt.colorbar(scatter, label='Expected Goals (xG)')
+    plt.title('2D Shot Map with Expected Goals', size=14)
+    plt.xlabel('Distance from Goal Line (yards)', size=12)
+    plt.ylabel('Width Position (yards)', size=12)
+    plt.grid(True, alpha=0.3)
+    plt.savefig(f"{output_prefix}_2d.png", dpi=300, bbox_inches='tight', facecolor='white')
+    plt.close()
+    
+    # 3D Visualization
+    fig = plt.figure(figsize=(15, 10))
+    ax = fig.add_subplot(111, projection='3d')
+    
+    scatter = ax.scatter(
+        shots_df['x'],
+        shots_df['y'],
+        shots_df['predicted_xg'],
+        c=shots_df['is_goal'],
+        cmap='coolwarm',
+        s=100,
+        alpha=0.6
+    )
+    
+    ax.set_xlabel('Distance from Goal (yards)', size=12)
+    ax.set_ylabel('Width Position (yards)', size=12)
+    ax.set_zlabel('Expected Goals (xG)', size=12)
+    ax.view_init(elev=20, azim=45)
+    
+    plt.colorbar(scatter, label='Actual Goal (1) or Miss (0)')
+    plt.title('3D Shot Analysis: Location and xG', size=14)
+    plt.savefig(f"{output_prefix}_3d.png", dpi=300, bbox_inches='tight', facecolor='white')
+    plt.close()
 
-def extract_shot_data(event):
+def export_shot_data(shots_df, output_file='shot_data.json'):
     """
-    从事件中提取射门数据
+    导出射门数据为JSON格式，用于可视化
     """
-    try:
-        # 查找射门者位置（在freeze_frame中actor=true的球员）
-        shot_location = None
-        for player in event.get('freeze_frame', []):
-            if player.get('actor', False):
-                shot_location = player.get('location')
-                break
-        
-        if not shot_location:
-            return None
-            
-        x, y = shot_location
-        
-        # 计算基本特征
-        shot_features = calculate_shot_features(x, y)
-        if shot_features is None:
-            return None
-            
-        # 添加事件ID
-        shot_features['event_uuid'] = event.get('event_uuid', '')
-        
-        return shot_features
-        
-    except Exception as e:
-        print(f"Error extracting shot data: {str(e)}")
-        return None
+    viz_data = shots_df.apply(
+        lambda row: {
+            'x': float(row['x']),
+            'y': float(row['y']),
+            'distance': float(row['distance_to_goal']),
+            'angle': float(row['shot_angle']),
+            'goal': int(row['is_goal']),
+            'predicted_xg': float(row['predicted_xg']) if 'predicted_xg' in row else None
+        }, 
+        axis=1
+    ).tolist()
 
-def calculate_shot_features(x, y):
+    with open(output_file, 'w') as f:
+        json.dump(viz_data, f)
+    
+    print(f"Data exported to {output_file}")
+    return viz_data
+
+def calculate_shot_metrics(x, y):
     """
-    计算射门的关键特征：
-    - x, y: 射门位置坐标
-    - shot_angle: 射门角度
+    计算射门的关键指标
     """
     try:
         x = float(x)
         y = float(y)
         
-        # 计算射门角度 (使用余弦定理)
         GOAL_WIDTH = 8
-        goal_y1, goal_y2 = 36, 44  # 球门柱的y坐标
+        GOAL_CENTER_Y = 40
+        GOAL_X = 120
+        GOAL_Y1, GOAL_Y2 = 36, 44
         
-        # 计算到两个球门柱的距离
-        d1 = math.sqrt((120-x)**2 + (goal_y1-y)**2)
-        d2 = math.sqrt((120-x)**2 + (goal_y2-y)**2)
+        # Calculate direct distance to goal
+        distance_to_goal = math.sqrt((GOAL_X-x)**2 + (GOAL_CENTER_Y-y)**2)
         
-        # 使用余弦定理计算角度
+        # Calculate shot angle using the law of cosines
+        d1 = math.sqrt((GOAL_X-x)**2 + (GOAL_Y1-y)**2)
+        d2 = math.sqrt((GOAL_X-x)**2 + (GOAL_Y2-y)**2)
+        
         cos_angle = (d1**2 + d2**2 - GOAL_WIDTH**2)/(2*d1*d2)
-        angle = math.acos(min(1, max(-1, cos_angle)))
+        shot_angle = math.acos(min(1, max(-1, cos_angle)))
         
         return {
             'x': x,
             'y': y,
-            'shot_angle': angle
+            'distance_to_goal': distance_to_goal,
+            'shot_angle': shot_angle
         }
         
     except Exception as e:
-        print(f"Error calculating features for coordinates ({x}, {y}): {str(e)}")
+        print(f"Error in calculation: {str(e)}")
+        return None
+
+def process_shot_data(event):
+    """
+    从事件数据中提取射门信息
+    """
+    try:
+        if event.get('type', {}).get('name') != 'Shot':
+            return None
+            
+        location = event.get('location')
+        if not location:
+            return None
+            
+        metrics = calculate_shot_metrics(location[0], location[1])
+        if not metrics:
+            return None
+            
+        shot_outcome = event.get('shot', {}).get('outcome', {}).get('name')
+        metrics['is_goal'] = 1 if shot_outcome == 'Goal' else 0
+        
+        return metrics
+        
+    except Exception as e:
+        print(f"Error processing shot: {str(e)}")
         return None
 
 def train_xg_model(shots_df):
     """
-    训练xG模型并返回系数
+    训练xG模型并生成公式
     """
-    print("\nAvailable columns for training:", shots_df.columns.tolist())
+    features = ['x', 'y', 'distance_to_goal', 'shot_angle']
     
-    # 只使用x, y和角度特征
-    required_columns = ['x', 'y', 'shot_angle']
+    X = shots_df[features]
+    y = shots_df['is_goal']
     
-    # 准备特征
-    X = shots_df[required_columns]
-    
-    # 检查是否有无效值
-    if X.isna().any().any():
-        print("Warning: Found NaN values in features. Removing rows with NaN...")
-        X = X.dropna()
-    
-    # 使用示例目标变量（这里应该替换为实际的进球数据）
-    y = np.random.binomial(n=1, p=0.1, size=len(X))
-    
-    # 标准化特征
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     
-    # 训练模型
     model = LogisticRegression(random_state=42)
     model.fit(X_scaled, y)
     
-    # 获取每个特征的系数
-    feature_coefficients = dict(zip(required_columns, model.coef_[0]))
-    
-    return model, scaler, feature_coefficients
-
-def get_xg_formula(model, scaler, feature_coefficients):
-    """
-    生成可解释的xG计算公式
-    """
+    coefficients = model.coef_[0]
     intercept = model.intercept_[0]
     means = scaler.mean_
     scales = scaler.scale_
     
     formula = f"""
-    xG计算公式(xG calculated function):
+    xG Formula:
     
-    1. 标准化变量(standard variable):
+    1. Standardize variables:
         x_std = (x - {means[0]:.3f}) / {scales[0]:.3f}
         y_std = (y - {means[1]:.3f}) / {scales[1]:.3f}
-        shot_angle_std = (shot_angle - {means[2]:.3f}) / {scales[2]:.3f}
+        distance_std = (distance_to_goal - {means[2]:.3f}) / {scales[2]:.3f}
+        angle_std = (shot_angle - {means[3]:.3f}) / {scales[3]:.3f}
     
-    2. 计算对数几率 (log odds):
-        log_odds = {intercept:.3f} 
-                   + {feature_coefficients['x']:.3f} * x_std 
-                   + {feature_coefficients['y']:.3f} * y_std 
-                   + {feature_coefficients['shot_angle']:.3f} * shot_angle_std
+    2. Calculate log odds:
+        log_odds = {intercept:.3f} + 
+                   {coefficients[0]:.3f} * x_std + 
+                   {coefficients[1]:.3f} * y_std + 
+                   {coefficients[2]:.3f} * distance_std + 
+                   {coefficients[3]:.3f} * angle_std
     
-    3. 转换为概率 (xG)(transfer to probability):
-        xG = 1 / (1 + e^(-log_odds))
+    3. Convert to probability:
+        xG = 1 / (1 + exp(-log_odds))
+    
+    Feature coefficients:
+    x: {coefficients[0]:.3f}
+    y: {coefficients[1]:.3f}
+    distance_to_goal: {coefficients[2]:.3f}
+    shot_angle: {coefficients[3]:.3f}
     """
     
-    return formula
+    return model, scaler, formula
 
-def process_all_json_files(folder_path):
+def process_files(folder_path):
     """
-    处理文件夹中的所有JSON文件
+    处理所有事件文件
     """
-    folder = Path(folder_path)
-    json_files = list(folder.glob('*.json'))
-    all_shots_data = []
+    files = list(Path(folder_path).glob('*.json'))
+    all_shots = []
     
-    print(f"Processing {len(json_files)} files...")
-    for json_file in tqdm(json_files):
-        try:
-            match_data = load_json_safely(json_file)
-            if match_data is None:
-                continue
-                
-            # 打印文件的键以了解结构
-            if len(all_shots_data) == 0:
-                print("\nFile structure keys:", match_data[0].keys() if match_data else "No data")
+    print(f"Processing {len(files)} files...")
+    for file in tqdm(files):
+        with open(file, 'r', encoding='utf-8') as f:
+            match_data = json.load(f)
             
-            # 遍历每个事件
-            for event in match_data:
-                if isinstance(event, dict):
-                    shot_data = extract_shot_data(event)
-                    if shot_data is not None:
-                        all_shots_data.append(shot_data)
-        
-        except Exception as e:
-            print(f"Error processing {json_file}: {str(e)}")
-            continue
+        for event in match_data:
+            shot_data = process_shot_data(event)
+            if shot_data:
+                all_shots.append(shot_data)
     
-    if not all_shots_data:
-        raise ValueError("No valid shot data found in any of the files")
-        
-    df = pd.DataFrame(all_shots_data)
-    print(f"\nFound {len(df)} valid shots")
-    print("\nDataFrame columns:", df.columns.tolist())
-    print("\nFirst few rows:")
-    print(df.head())
+    return pd.DataFrame(all_shots)
+
+def plot_shot_map(shots_df, output_file='shot_map.png'):
+    """
+    生成射门分布图
+    """
+    import matplotlib.pyplot as plt
     
-    return df
+    plt.figure(figsize=(12, 8))
+    scatter = plt.scatter(
+        shots_df['x'],
+        shots_df['y'],
+        c=shots_df['predicted_xg'],
+        s=100,
+        cmap='YlOrRd',
+        alpha=0.6
+    )
+    plt.colorbar(scatter, label='Expected Goals (xG)')
+    plt.title('Shot Map with xG Values')
+    plt.xlabel('Field Length (yards)')
+    plt.ylabel('Field Width (yards)')
+    plt.savefig(output_file)
+    plt.close()
 
-def main(folder_path,output_file):
+def main(data_path, output_file):
     """
-    主函数：处理数据并生成xG公式
+    主函数
     """
-    try:
-        # 处理所有文件
-        shots_df = process_all_json_files(folder_path)
-        
-        # 训练模型并获取系数
-        model, scaler, feature_coefficients = train_xg_model(shots_df)
-        
-        # 生成公式
-        formula = get_xg_formula(model, scaler, feature_coefficients)
-        
-        # 打印统计信息
-        print("\n数据统计(data statistic):")
-        print(f"总射门数(total scored count): {len(shots_df)}")
-        print("\n特征重要性(PFI):")
-        for feature, coef in feature_coefficients.items():
-            print(f"{feature}: {abs(coef):.3f}")
-        
-        print("\nxG公式(xg function):")
-        print(formula)
+    shots_df = process_files(data_path)
+    if len(shots_df) == 0:
+        raise ValueError("No shot data found")
+    
+    print(f"\nTotal shots: {len(shots_df)}")
+    print(f"Goals: {shots_df['is_goal'].sum()}")
+    print(f"Conversion rate: {shots_df['is_goal'].mean():.3f}")
+    
+    model, scaler, formula = train_xg_model(shots_df)
+    
+    # Add predicted xG values
+    X = shots_df[['x', 'y', 'distance_to_goal', 'shot_angle']]
+    X_scaled = scaler.transform(X)
+    shots_df['predicted_xg'] = model.predict_proba(X_scaled)[:, 1]
+    create_shot_visualizations(shots_df)
+    # Export data for visualization
+    export_shot_data(shots_df, 'shot_data.json')
+    
+    # Create visualizations
+    plot_shot_map(shots_df)
+    
+    with open(output_file, 'w') as f:
+        f.write(formula)
+    
+    return shots_df, model, scaler
 
-        with open(output_file, 'w') as f:
-            f.write("Data Statistics:\n")
-            f.write(f"Total shots: {len(shots_df)}\n\n")
-            f.write("Feature Importance:\n")
-            for feature, coef in feature_coefficients.items():
-                f.write(f"{feature}: {abs(coef):.3f}\n")
-            f.write("\nxG Formula:\n")
-            f.write(formula)
-
-        
-        return shots_df, model, scaler, feature_coefficients
-        
-    except Exception as e:
-        print(f"Error in main function: {str(e)}")
-        raise
-
-# 使用示例
 if __name__ == "__main__":
-    folder_path = "/Users/yifengluo/Desktop/xG-project-code/open-data/data/three-sixty"
-    output_file = "xg_model_outputs.txt"
-    shots_df, model, scaler, coefficients = main(folder_path,output_file)
-
+    data_path = "../open-data/data/events"
+    output_file = "xg_formula.txt"
+    shots_df, model, scaler = main(data_path, output_file)
