@@ -255,8 +255,6 @@ def main(data_path, output_file):
     create_shot_visualizations(shots_df)
     # Export data for visualization
     export_shot_data(shots_df, 'shot_data.json')
-    
-    # Create visualizations
     plot_shot_map(shots_df)
     
     with open(output_file, 'w') as f:
