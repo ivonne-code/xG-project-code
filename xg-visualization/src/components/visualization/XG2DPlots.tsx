@@ -10,37 +10,31 @@ const XG2DPlots = () => {
 
  // 使用实际训练好的模型计算 xG
  const calculateXG = (x: number, y: number) => {
-   // 模型参数
-   const means = [57.532, 39.899, 0.125];  // [x_mean, y_mean, angle_mean]
-   const scales = [28.231, 22.958, 0.087];  // [x_scale, y_scale, angle_scale]
-   const coefficients = {
-       x: 0.006,
-       y: -0.002,
-       shot_angle: -0.003
-   };
-   const intercept = -2.196;
-
-   // 1. 计算角度
+   // Model parameters (data_cleaning/xg_formula.txt; 87,111 StatsBomb shots, 5-fold CV AUC 0.75)
+   const means = [103.571, 39.761, 19.203, 0.443];  // [x, y, distance, angle]
+   const scales = [8.802, 9.895, 8.753, 0.276];
+   const coefficients = { x: -0.381, y: 0.007, distance: -1.125, shot_angle: 0.234 };
+   const intercept = -2.422;
+   // 1. Distance and shot angle
    const GOAL_WIDTH = 8;
    const GOAL_Y1 = 36;
    const GOAL_Y2 = 44;
-   
+   const distance = Math.sqrt((120-x)**2 + (40-y)**2);
    const d1 = Math.sqrt((120-x)**2 + (GOAL_Y1-y)**2);
    const d2 = Math.sqrt((120-x)**2 + (GOAL_Y2-y)**2);
    const cosAngle = (d1**2 + d2**2 - GOAL_WIDTH**2)/(2*d1*d2);
    const angle = Math.acos(Math.min(1, Math.max(-1, cosAngle)));
-
-   // 2. 标准化变量
+   // 2. Standardize
    const x_std = (x - means[0]) / scales[0];
    const y_std = (y - means[1]) / scales[1];
-   const angle_std = (angle - means[2]) / scales[2];
-
-   // 3. 计算对数几率
-   const logOdds = intercept + 
+   const distance_std = (distance - means[2]) / scales[2];
+   const angle_std = (angle - means[3]) / scales[3];
+   // 3. Log odds
+   const logOdds = intercept +
                    coefficients.x * x_std +
                    coefficients.y * y_std +
+                   coefficients.distance * distance_std +
                    coefficients.shot_angle * angle_std;
-
    // 4. 转换为概率
    return 1 / (1 + Math.exp(-logOdds));
  };
