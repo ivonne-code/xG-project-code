@@ -2,6 +2,11 @@
 
 A logistic regression model that estimates the probability that a soccer shot results in a goal, trained on **87,111 shots** from [StatsBomb Open Data](https://github.com/statsbomb/open-data).
 
+Part of a team project at the Illinois Mathematics Lab (UIUC, Fall 2024) by Andy Song, Jake Summaria, Samy Bouzamondo, and Yifeng Luo, mentored by Kiran Luecke and Yigal Kamel. This repository contains the shot-location xG model (Section 2.3 of the report). The full team work, including the clutch-goal analysis and the perceived-length and freeze-frame refinements, is in the report and poster:
+
+- [Final report (PDF)](docs/xG_final_report_IML_Fall2024.pdf)
+- [Poster (PDF)](docs/xG_poster_IML_Fall2024.pdf)
+
 ## Results
 
 5-fold stratified cross-validation (`evaluate_xg.py`):
@@ -52,7 +57,14 @@ Visualization app:
 cd xg-visualization && npm install && npm run dev
 ```
 
+## Notes on the report's evaluation
+
+- The report cites "76% prediction accuracy". Accuracy is not informative here: only 11.1% of shots are goals, so predicting "no goal" for every shot already scores 88.9%. The cross-validated AUC, log loss, and Brier score above are the metrics to use.
+- The report's "penalty spot ≥ 0.7 xG" reflects the actual conversion rate of shots taken from the penalty spot (67% across 1,393 shots), most of which are penalty kicks. Because this model does not separate penalties from open play, it predicts about 0.18 at that location.
+
 ## Limitations and next steps
+
+- Penalties are not modeled separately; adding shot type would fix the penalty-spot gap above.
 
 - Uses location features only. Adding body part, shot type (open play, set piece, penalty), and assist type would likely improve AUC.
 - Logistic regression assumes a linear relationship in log odds; a gradient-boosted model could capture interactions between distance and angle.
