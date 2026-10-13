@@ -65,6 +65,5 @@ cd xg-visualization && npm install && npm run dev
 ## Limitations and next steps
 
 - Penalties are not modeled separately; adding shot type would fix the penalty-spot gap above.
-
 - Uses location features only. Adding body part, shot type (open play, set piece, penalty), and assist type would likely improve AUC.
 - Logistic regression assumes a linear relationship in log odds; a gradient-boosted model could capture interactions between distance and angle.
